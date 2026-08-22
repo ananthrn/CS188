@@ -42,6 +42,7 @@ import util
 import time
 import search
 import pacman
+import itertools
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -359,6 +360,17 @@ class CornersProblem(search.SearchProblem):
         return len(actions)
 
 
+def getHeuristicForOrder(currentPosition: Tuple[int], foodPositionsList: List[Tuple[int]]) -> float:
+    if len(foodPositionsList) == 0:
+        return 0
+    sumOfDistances = abs(currentPosition[0] - foodPositionsList[0][0]) + abs(currentPosition[1] - foodPositionsList[0][1])
+    prevFood = foodPositionsList[0]
+    for foodPosition in foodPositionsList[1:]:
+        sumOfDistances += abs(foodPosition[0] - prevFood[0]) + abs(foodPosition[1] - prevFood[1])
+        prevFood = foodPosition
+
+    return sumOfDistances
+
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -376,7 +388,15 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    
+    currentPosition, currentFoodPositions = state 
+    if len(currentFoodPositions) == 0:
+        return 0
+    minSumOfDistances = 99999
+    for foodPositionsIterator in itertools.permutations(currentFoodPositions):
+        newDistance = getHeuristicForOrder(currentPosition, foodPositionsList=list(foodPositionsIterator))
+        minSumOfDistances = min(minSumOfDistances, newDistance)
+    return minSumOfDistances # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
