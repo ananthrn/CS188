@@ -371,7 +371,7 @@ def getHeuristicForOrder(currentPosition: Tuple[int], foodPositionsList: List[Tu
 
     return sumOfDistances
 
-def cornersHeuristic(state: Any, problem: CornersProblem):
+def cornersHeuristic(state: Any, problem: CornersProblem) -> float:
     """
     A heuristic for the CornersProblem that you defined.
 
@@ -489,8 +489,16 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    foodGridList = foodGrid.asList()
     "*** YOUR CODE HERE ***"
-    return 0
+    maxDistanceToDot = max(list(
+        map(
+            lambda foodPosition: abs(position[0] - foodPosition[0]) + abs(position[1] - foodPosition[1]),
+            foodGridList
+        ),
+        
+    ), default=0)
+    return maxDistanceToDot
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
