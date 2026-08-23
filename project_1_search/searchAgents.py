@@ -500,6 +500,23 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     ), default=0)
     return maxDistanceToDot
 
+def anyFoodHeuristic(
+    state,
+    problem
+) -> float:
+    pacmanPosition = state
+    foodPositionsList = problem.food.asList()
+
+    minDistanceToFood = min(
+        map(
+            lambda foodPosition: abs(foodPosition[0] - pacmanPosition[0]) + abs(foodPosition[1] - pacmanPosition[1]),
+            foodPositionsList
+        ),
+        default=0
+    )
+
+    return minDistanceToFood
+
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
@@ -527,9 +544,11 @@ class ClosestDotSearchAgent(SearchAgent):
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = search.aStarSearch(
+            problem,
+            heuristic=anyFoodHeuristic
+        )
+        return actions
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -564,8 +583,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y] and not self._visited.get(state, False)
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
