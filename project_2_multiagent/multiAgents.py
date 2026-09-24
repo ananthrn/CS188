@@ -43,11 +43,17 @@ class ReflexAgent(Agent):
         legalMoves = gameState.getLegalActions()
 
         # Choose one of the best actions
+        print("-------------Getting Actions------------")
+        print("currentStatePos: ", print(gameState.getPacmanPosition()))
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
-
+        print("bestMoves:",[legalMoves[index] for index in bestIndices])
+        print("MoveChosen: ", legalMoves[chosenIndex])
+        print("--------Done---------------")
+        print()
+        print()
         "Add more of your code here if you want to"
 
         return legalMoves[chosenIndex]
@@ -75,11 +81,40 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         currentFood = currentGameState.getFood()
+
+        newFoodList = newFood.asList()
+
         "*** YOUR CODE HERE ***"
 
         # One Point for if the new reflex agent gets a food
-        foodPoints = len(currentFood.asList()) - len(newFood.asList())
-        return foodPoints
+        foodPoints  = len(currentFood.asList()) - len(newFoodList)
+
+        # Points for being closer to newFood. 
+        minDistanceToNewFood = min(
+            (manhattanDistance(
+                newPos,
+                newFoodPos
+            ) for newFoodPos in newFoodList),
+            default=0.001
+        )
+
+        minDistanceToNewGhosts = min(
+            (manhattanDistance(
+                newPos,
+                ghostState.getPosition()
+            ) for ghostState in newGhostStates) 
+        ) + 0.0001
+
+
+        # Lots of Points for completing the game:
+        # allFoodCompleted = len(newFood.asList()) == 0
+        # allFoodCompletedPoints = 1000 if allFoodCompleted else 0
+        print("newPos: ", newPos)
+        print("foodPoints: ", foodPoints)
+        print("minDistanceToNewFood: ", minDistanceToNewFood)
+        print("score: ", foodPoints + 1.0/minDistanceToNewFood - 1.0/minDistanceToNewGhosts)
+        print()
+        return foodPoints + 1.0/minDistanceToNewFood - 1.0/minDistanceToNewGhosts
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
