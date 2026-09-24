@@ -95,7 +95,7 @@ class ReflexAgent(Agent):
                 newPos,
                 newFoodPos
             ) for newFoodPos in newFoodList),
-            default=0.001
+            default=0.1
         )
 
         minDistanceToNewGhosts = min(
@@ -109,12 +109,14 @@ class ReflexAgent(Agent):
         # Lots of Points for completing the game:
         # allFoodCompleted = len(newFood.asList()) == 0
         # allFoodCompletedPoints = 1000 if allFoodCompleted else 0
+        print("action:", action)
         print("newPos: ", newPos)
         print("foodPoints: ", foodPoints)
         print("minDistanceToNewFood: ", minDistanceToNewFood)
+        print("minDistanceToNewGhosts: ", minDistanceToNewGhosts)
         print("score: ", foodPoints + 1.0/minDistanceToNewFood - 1.0/minDistanceToNewGhosts)
         print()
-        return foodPoints + 1.0/minDistanceToNewFood - 1.0/minDistanceToNewGhosts
+        return  foodPoints + 1.0/minDistanceToNewFood - 2.0/minDistanceToNewGhosts
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
