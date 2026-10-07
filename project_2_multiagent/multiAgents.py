@@ -87,7 +87,7 @@ class ReflexAgent(Agent):
         "*** YOUR CODE HERE ***"
 
         # One Point for if the new reflex agent gets a food
-        foodPoints  = len(currentFood.asList()) - len(newFoodList)
+        foodLeft = len(newFoodList)
 
         # Points for being closer to newFood. 
         minDistanceToNewFood = min(
@@ -95,28 +95,31 @@ class ReflexAgent(Agent):
                 newPos,
                 newFoodPos
             ) for newFoodPos in newFoodList),
-            default=0.1
+            default=0.0
         )
 
         minDistanceToNewGhosts = min(
             (manhattanDistance(
                 newPos,
                 ghostState.getPosition()
-            ) for ghostState in newGhostStates) 
-        ) + 0.0001
+            ) for ghostState, ghostScaredTimer in zip(newGhostStates, newScaredTimes) if ghostScaredTimer==0),
+            default=0.0
+        ) 
 
+        stoppingPenalty = -0.001 if action == Directions.STOP else 0.0
 
         # Lots of Points for completing the game:
         # allFoodCompleted = len(newFood.asList()) == 0
         # allFoodCompletedPoints = 1000 if allFoodCompleted else 0
-        print("action:", action)
-        print("newPos: ", newPos)
-        print("foodPoints: ", foodPoints)
-        print("minDistanceToNewFood: ", minDistanceToNewFood)
-        print("minDistanceToNewGhosts: ", minDistanceToNewGhosts)
-        print("score: ", foodPoints + 1.0/minDistanceToNewFood - 1.0/minDistanceToNewGhosts)
-        print()
-        return  foodPoints + 1.0/minDistanceToNewFood - 2.0/minDistanceToNewGhosts
+        # print("action:", action)
+        # print("stopping Penalty: ", stoppingPenalty)
+        # print("newPos: ", newPos)
+        # print("foodPoints: ", 50.0/(foodLeft + 0.0001))
+        # print("minDistanceToNewFood: ", minDistanceToNewFood)
+        # print("minDistanceToNewGhosts: ", minDistanceToNewGhosts)
+        # print("score: ", 1.0/(minDistanceToNewFood + 0.01) - 2.0/(minDistanceToNewGhosts + 0.01))
+        # print()
+        return -foodLeft + 1.0/(minDistanceToNewFood + 0.01) - 2.0/(minDistanceToNewGhosts + 0.01) + stoppingPenalty
 
 def scoreEvaluationFunction(currentGameState: GameState):
     """
